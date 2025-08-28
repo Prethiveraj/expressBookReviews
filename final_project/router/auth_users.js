@@ -27,7 +27,7 @@ regd_users.post("/login", (req, res) => {
         return res.status(401).json({ message: "Invalid username or password." });
     }
 
-    const token = jwt.sign({ username: username }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ username: username }, SECRET_KEY);
 
     // Optionally store token in session if you're using express-session
     req.session.authorization = {
@@ -43,8 +43,30 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const review = req.query.review
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const token =  req.headers["authorization"];
+  if (!token){
+    return res.status(401).json({message : "Your token is inot vaild"})
+  }
+
+  try {
+    const decode = jwt.verify(token.split(" ")[1], SECRET_KEY);
+    const username = decode.username;
+
+    if (!books[isbn].review){
+        books[isbn].review = {};
+    }
+
+    books[isbn].review[username] = review;
+
+    return res.status(200).json({
+        message: "You successfully added a review",
+        review: books[isbn].review,    })
+  }catch(err){
+    return res.status(400).json({message: "review add or modify is failed"})
+  }
 });
 
 module.exports.authenticated = regd_users;
