@@ -5,6 +5,9 @@ const { users } = require('./auth_users');
 const public_users = express.Router();
 
 
+const BASE_URL = "https://pprethiveraj-5000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai";
+
+
 public_users.post("/register", (req,res) => {
     const {username, password} = req.body
 
@@ -92,5 +95,43 @@ public_users.get('/review/:isbn',function (req, res) {
     }
   //Write your code here
 });
+
+async function getBooks() {
+    try {
+        const response = await axios.get(`${BASE_URL}/`);
+        console.log("All Books:", response.data);
+    } catch (error) {
+        console.error("Error fetching books:", error.message);
+    }
+}
+
+async function getBookByISBN(isbn) {
+    try {
+        const response = await axios.get(`${BASE_URL}/isbn/${isbn}`);
+        console.log("Book by ISBN:", response.data);
+    } catch (error) {
+        console.error("Error fetching book by ISBN:", error.message);
+    }
+}
+
+// Task 12: Get book details by Author
+async function getBookByAuthor(author) {
+    try {
+        const response = await axios.get(`${BASE_URL}/author/${author}`);
+        console.log("Books by Author:", response.data);
+    } catch (error) {
+        console.error("Error fetching books by author:", error.message);
+    }
+}
+
+// Task 13: Get book details by Title
+async function getBookByTitle(title) {
+    try {
+        const response = await axios.get(`${BASE_URL}/title/${title}`);
+        console.log("Books by Title:", response.data);
+    } catch (error) {
+        console.error("Error fetching books by title:", error.message);
+    }
+}
 
 module.exports.general = public_users;
